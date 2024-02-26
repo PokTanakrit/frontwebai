@@ -1,26 +1,33 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import Keyboard from './Keyboard'; // เรียกใช้ Component ของคีย์บอร์ด
+import './form.css';
 import './Page.css';
-
 function Page1() {
-    // Define state for user ID
-    const [userId, setUserId] = useState('');
+    const [userId, setUserId] = useState(''); // สร้าง state สำหรับเก็บข้อมูลผู้ใช้
 
-    // Event handler for input change
-    const handleInputChange = (event) => {
-        setUserId(event.target.value); // Update the user ID state
+    // เมื่อมีการเปลี่ยนแปลงใน userId ให้แสดงผลลัพธ์
+    const handleInputChange = (input) => {
+        if (input === 'Backspace') {
+            // Remove the last character from the userId
+            setUserId(prevUserId => prevUserId.slice(0, -1));
+        } else {
+            // Concatenate the input with the current userId and update the state
+            setUserId(prevUserId => prevUserId + input);
+        }
     };
 
     return (
         <div>
-            <header>หมายเลขบัตรประชาชน</header>
-            
+            <header style={{ textAlign: 'center' }}>หมายเลขบัตรประชาชน</header>
+            {/* ใช้ input เพื่อแสดงผลข้อมูลผู้ใช้ */}
             <input
                 type="text"
                 value={userId}
-                onChange={handleInputChange}
             />
-            <body><Link to="/page2"><button>ยืนยัน</button></Link></body>
+             <Link to="/page2"><button>ยืนยัน</button></Link>  
+            {/* เรียกใช้ Component ของคีย์บอร์ดและส่งฟังก์ชัน handleInputChange ไป */}
+            <Keyboard handleKeyClick={handleInputChange} />
         </div>
     );
 }

@@ -11,7 +11,7 @@ import Page7 from './Page/Page7.js';
 import Page8 from './Page/Page8.js';
 import Page9 from './Page/Page9.js';
 import Page10 from './Page/Page10.js';
-import KeyboardPage from './Page/Keyboardpage.js';
+import Pagekey from './Page/Keyboardpage.js';
 
 import Pagechoose3 from './Page/choosepage3.js'
 import Pagechoose4 from './Page/choosepage4.js'
@@ -37,7 +37,7 @@ function App() {
         <Route path='/page8' element={<Page8/>} />
         <Route path='/page9' element={<Page9/>} />
         <Route path='/page10' element={<Page10/>} />
-        {/* <Route path='/Key' element={<KeyboardPage/>} /> */}
+        <Route path='/Pagekey' element={<Pagekey/>} />
         <Route path='/choosepage3' element={<Pagechoose3/>} />
         <Route path='/choosepage4' element={<Pagechoose4/>} />
         <Route path='/choosepage5' element={<Pagechoose5/>} />

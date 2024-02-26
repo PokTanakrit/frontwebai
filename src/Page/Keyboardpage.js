@@ -1,54 +1,45 @@
-import React, { useRef, useState } from "react";
-import Keyboard from "react-simple-keyboard";
-import "react-simple-keyboard/build/css/index.css";
-import "./styles.css"; // Your custom styles (optional)
-import thaiLayout from "simple-keyboard-layouts/build/layouts/thai";
+// Page1.js
 
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import Keyboard from './Keyboard'; // แก้ชื่อไฟล์จาก key.js เป็น keyboard.js
+import './form.css';
 
-function KeyboardPage() {
-  const [input, setInput] = useState("");
-  const [layout, setLayout] = useState("default");
-  const keyboard = useRef(null);
+function Page1() {
+    const [userId, setUserId] = useState('');
+    const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
-  const onChange = (input) => {
-    setInput(input);
-    console.log("Input changed", input);
-  };
+    const handleInputChange = (input) => {
+        setUserId(input);
+        console.log(input);
+    };
 
-  const handleShift = () => {
-    const newLayoutName = layout === "default" ? "shift" : "default";
-    setLayout(newLayoutName);
-  };
+    const handleKeyClick = (input) => {
+        setUserId((prevUserId) => prevUserId + input);
+    };
 
-  const onKeyPress = (button) => {
-    console.log("Button pressed", button);
+    const toggleKeyboard = () => {
+        setIsKeyboardVisible(!isKeyboardVisible);
+    };
 
-    if (button === "{shift}" || button === "{lock}") handleShift();
-  };
+    return (
+        <div>
+            <header style={{ textAlign: 'center' }}>หมายเลขบัตรประชาชน</header>
+            
+            <input
+                type="text"
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
+                onFocus={toggleKeyboard}
+                onBlur={toggleKeyboard}
+            />
+            {isKeyboardVisible && <Keyboard handleKeyClick={handleKeyClick} />}
 
-  const onChangeInput = (event) => {
-    const input = event.target.value;
-    setInput(input);
-  };
-
-  return (
-    <div className="KeyboardPage">
-      <input
-        value={input}
-        placeholder={"Type something..."}
-        onChange={onChangeInput}
-      />
-      <Keyboard
-        keyboardRef={keyboard}
-        layoutName={layout}
-        layouts={{ // Add the Thai layout
-          thai: thaiLayout,
-        }}
-        onChange={onChange}
-        onKeyPress={onKeyPress}
-      />
-    </div>
-  );
+            <div className="button-container">
+             <Link to="/page2"><button>ยืนยัน</button></Link>  
+            </div>
+        </div>
+    );
 }
 
-export default KeyboardPage;
+export default Page1;

@@ -20,14 +20,16 @@ function Page1() {
     return (
         <div>
             <header style={{ textAlign: 'center' }}>หมายเลขบัตรประชาชน</header>
-            {/* ใช้ input เพื่อแสดงผลข้อมูลผู้ใช้ */}
+            <div className="input-container">
             <input
                 type="text"
                 value={userId}
-            />
-             <Link to="/page2"><button>ยืนยัน</button></Link>  
-            {/* เรียกใช้ Component ของคีย์บอร์ดและส่งฟังก์ชัน handleInputChange ไป */}
-            <Keyboard handleKeyClick={handleInputChange} />
+            /> 
+            </div>
+            <div className="center-container">
+               <Link to="/page2"><button>ยืนยัน</button></Link>
+               <Keyboard handleKeyClick={handleInputChange} />   
+            </div>
         </div>
     );
 }

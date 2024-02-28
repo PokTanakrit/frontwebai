@@ -18,7 +18,7 @@
     "simple-keyboard-layouts": "^3.3.68",
     "web-vitals": "^2.1.4"
   },
-  "homepage": "http://PokTanakrit.github.io/WEBAI",
+  "homepage": "http://PokTanakrit.github.io/WEBAI/#",
   "scripts": {
     "predeploy":"npm run build",
     "deploy":"gh-pages -d build",

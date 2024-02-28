@@ -5,6 +5,7 @@ import './Page.css';
 function Page3() {
     const [isRecording, setIsRecording] = useState(false);
     const [audioBlob, setAudioBlob] = useState(null);
+
     const handleSpeak = async () => {
         alert("Recording audio...");
         startRecording();
@@ -12,7 +13,6 @@ function Page3() {
 
     const startRecording = () => {
         setIsRecording(true);
-        console.log("isRecording state:", isRecording);
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then(handleAudioStream)
             .catch((error) => {
@@ -23,9 +23,7 @@ function Page3() {
 
     const stopRecording = () => {
         setIsRecording(false);
-        console.log("isRecording state:", isRecording);
     };
-    
 
     const handleAudioStream = (stream) => {
         const mediaRecorder = new MediaRecorder(stream);
@@ -44,19 +42,16 @@ function Page3() {
 
         setTimeout(() => {
             mediaRecorder.stop();
-        }, 2000); // Adjust recording time as needed
+        }, 50000); // Adjust recording time as needed
     };
 
     const playAudio = () => {
         if (audioBlob) {
             const audioUrl = URL.createObjectURL(audioBlob);
             const audioElement = new Audio(audioUrl);
-            audioElement.autoplay = true; // Autoplay audio
-            audioElement.controls = true; // Show audio controls
-            document.body.appendChild(audioElement); // Append audio element to DOM
+            audioElement.play();
         }
     };
-    
 
     const handleDownload = () => {
         if (audioBlob) {
@@ -79,11 +74,11 @@ function Page3() {
                     <button onClick={handleSpeak}>พูด</button>
                 )}
                 <span className="button-gap"></span>
-                <button onClick={playAudio} >เล่นเสียงที่บันทึกไว้</button>
+                <button onClick={playAudio} disabled={!audioBlob}>เล่นเสียงที่บันทึกไว้</button>
                 <span className="button-gap"></span>
-                <button onClick={handleDownload} >ดาวน์โหลดเสียงที่บันทึกไว้</button>
+                <button onClick={handleDownload} disabled={!audioBlob}>ดาวน์โหลดเสียงที่บันทึกไว้</button>
                 <span className="button-gap"></span>
-                <Link to="/choosepage3"><button>เลือกคำตอบ</button></Link>
+                <Link to="/choosepage4"><button>เลือกคำตอบ</button></Link>
             </div>
         </div>
     );

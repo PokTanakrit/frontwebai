@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter , Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './Home.js';
 import Page1 from './Page/Page1.js';
 import Page2 from './Page/Page2.js';
@@ -24,7 +24,7 @@ import Pagechoose10 from './Page/choosepage10.js';
 
 function App() {
   return (
-    <HashRouter basename={'/WEBAI/#'}>
+    <Router basename={'/WEBAI'}>
       <Routes>
         <Route path='/' element={<Home />} /> 
         <Route path='/page1' element={<Page1 />} /> 
@@ -48,7 +48,7 @@ function App() {
         <Route path='/choosepage10' element={<Pagechoose10/>} />
 
       </Routes>
-    </HashRouter>
+    </Router>
   );
 }
 

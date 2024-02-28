@@ -78,7 +78,7 @@ function Page3() {
                 <span className="button-gap"></span>
                 <button onClick={handleDownload} disabled={!audioBlob}>ดาวน์โหลดเสียงที่บันทึกไว้</button>
                 <span className="button-gap"></span>
-                <Link to="/choosepage4"><button>เลือกคำตอบ</button></Link>
+                <Link to="/choosepage3"><button>เลือกคำตอบ</button></Link>
             </div>
         </div>
     );

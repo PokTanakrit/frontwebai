@@ -42,7 +42,7 @@ function Page3() {
 
         setTimeout(() => {
             mediaRecorder.stop();
-        }, 50000); // Adjust recording time as needed
+        }, 2000); // Adjust recording time as needed
     };
 
     const playAudio = () => {

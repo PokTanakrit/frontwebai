@@ -36,13 +36,24 @@ function Page3() {
         mediaRecorder.addEventListener("stop", () => {
             const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
             setAudioBlob(audioBlob);
+            
+            // Save audio file to src/audio folder
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const link = document.createElement('a');
+            link.href = audioUrl;
+            link.setAttribute('download', 'recorded_audio.wav');
+            link.innerHTML = 'download';
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         });
 
         mediaRecorder.start();
 
         setTimeout(() => {
             mediaRecorder.stop();
-        }, 2000); // Adjust recording time as needed
+        }, 10000); 
     };
 
     const playAudio = () => {
@@ -50,16 +61,6 @@ function Page3() {
             const audioUrl = URL.createObjectURL(audioBlob);
             const audioElement = new Audio(audioUrl);
             audioElement.play();
-        }
-    };
-
-    const handleDownload = () => {
-        if (audioBlob) {
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const audioElement = document.createElement('a');
-            audioElement.href = audioUrl;
-            audioElement.download = 'recorded_audio.wav';
-            audioElement.click();
         }
     };
 
@@ -75,8 +76,6 @@ function Page3() {
                 )}
                 <span className="button-gap"></span>
                 <button onClick={playAudio} disabled={!audioBlob}>เล่นเสียงที่บันทึกไว้</button>
-                <span className="button-gap"></span>
-                <button onClick={handleDownload} disabled={!audioBlob}>ดาวน์โหลดเสียงที่บันทึกไว้</button>
                 <span className="button-gap"></span>
                 <Link to="/choosepage3"><button>เลือกคำตอบ</button></Link>
             </div>

@@ -116,7 +116,7 @@ function Pagechoose9() {
                     <button onClick={handleCancel}>ยกเลิก</button>
                     <span className="button-gap"></span>
                     <span className="button-gap"></span>
-                    {selectedSymptoms.size > 0 && <Link to="/page10"><button>ถัดไป</button></Link>}
+                    {selectedSymptoms.size > 0 && <Link to="/page11"><button>ถัดไป</button></Link>}
                 </React.Fragment>
             </div>
         </div>

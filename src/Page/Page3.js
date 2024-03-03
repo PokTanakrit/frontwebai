@@ -78,6 +78,8 @@ function Page3() {
                 <button onClick={playAudio} disabled={!audioBlob}>เล่นเสียงที่บันทึกไว้</button>
                 <span className="button-gap"></span>
                 <Link to="/choosepage3"><button>เลือกคำตอบ</button></Link>
+                <span className="button-gap"></span>
+                <Link to="/page4"><button>ถัดไป</button></Link>
             </div>
         </div>
     );

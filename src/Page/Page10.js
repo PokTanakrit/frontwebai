@@ -83,6 +83,8 @@ function Page10() {
                 <button onClick={handleDownload} >ดาวน์โหลดเสียงที่บันทึกไว้</button>
                 <span className="button-gap"></span>
                 <Link to="/choosepage10"><button>เลือกคำตอบ</button></Link>
+                <span className="button-gap"></span>
+                <Link to="/page11"><button>ถัดไป</button></Link>
             </div>
         </div>
     );

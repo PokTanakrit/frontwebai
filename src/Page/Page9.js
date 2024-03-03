@@ -70,7 +70,7 @@ function Page9() {
 
     return (
         <div>
-            <header>มีอาการอื่นๆ ร่วมด้วยหรือไม่?</header>
+            <header>มีอาการรุนแรงหรือส่งผลต่อชีวิตประจำวันหรือไม่?</header>
             <div className="button-container">
                 {isRecording ? (
                     <button onClick={stopRecording}>หยุดบันทึกเสียง</button>

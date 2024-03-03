@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import './Page.css';
 
 function Page3() {
@@ -27,7 +28,7 @@ function Page3() {
 
     const handleAudioStream = (stream) => {
         const mediaRecorder = new MediaRecorder(stream);
-        const audioChunks = [];
+        let audioChunks = [];
 
         mediaRecorder.addEventListener("dataavailable", (event) => {
             audioChunks.push(event.data);
@@ -36,17 +37,6 @@ function Page3() {
         mediaRecorder.addEventListener("stop", () => {
             const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
             setAudioBlob(audioBlob);
-            
-            // Save audio file to src/audio folder
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const link = document.createElement('a');
-            link.href = audioUrl;
-            link.setAttribute('download', 'recorded_audio.wav');
-            link.innerHTML = 'download';
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
         });
 
         mediaRecorder.start();
@@ -64,10 +54,22 @@ function Page3() {
         }
     };
 
+    const handleConfirm = () => {
+        axios.post('http://localhost:5000/audio', {
+            audio1: audioBlob
+        })
+        .then(response => {
+            console.log('Response:', response.data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    };
+
     return (
         <div>
             <header>ไม่ทราบว่าเป็นอะไรมา มีอาการอะไรบ้างคะ?</header>
-            
+
             <div className="button-container">
                 {isRecording ? (
                     <button onClick={stopRecording}>หยุดบันทึกเสียง</button>
@@ -78,6 +80,8 @@ function Page3() {
                 <button onClick={playAudio} disabled={!audioBlob}>เล่นเสียงที่บันทึกไว้</button>
                 <span className="button-gap"></span>
                 <Link to="/choosepage3"><button>เลือกคำตอบ</button></Link>
+                <span className="button-gap"></span>
+                <button onClick={handleConfirm}>ยืนยัน</button>
                 <span className="button-gap"></span>
                 <Link to="/page4"><button>ถัดไป</button></Link>
             </div>

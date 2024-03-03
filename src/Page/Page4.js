@@ -44,7 +44,7 @@ function Page4() {
 
         setTimeout(() => {
             mediaRecorder.stop();
-        }, 2000); // Adjust recording time as needed
+        }, 10000); // Adjust recording time as needed
     };
 
     const playAudio = () => {
@@ -83,6 +83,8 @@ function Page4() {
                 <button onClick={handleDownload} >ดาวน์โหลดเสียงที่บันทึกไว้</button>
                 <span className="button-gap"></span>
                 <Link to="/choosepage4"><button>เลือกคำตอบ</button></Link>
+                <span className="button-gap"></span>
+                <Link to="/page5"><button>ถัดไป</button></Link>
             </div>
         </div>
     );

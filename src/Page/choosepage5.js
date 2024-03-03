@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Page.css';
 import Keyboard from './Keyboard'; // Import Keyboard component
+import axios from 'axios'; 
 
 function Pagechoose5() {
     // Define state to store selected symptoms
@@ -57,9 +58,20 @@ function Pagechoose5() {
 
     // Function to handle confirmation
     const handleConfirm = () => {
-        hideKeyboard(); // ปิดคีย์บอร์ดก่อนที่จะดำเนินการต่อ
+        hideKeyboard(); 
         // Do something with selected symptoms
-        console.log(otherSymptom); // พิมพ์ข้อความที่ถูกเลือกไว้
+        console.log(otherSymptom); 
+        
+        // ส่งคำตอบ otherSymptom ไปยัง URL http://localhost:5000/answer
+        axios.post('http://localhost:5000/answer', {
+            ans3: otherSymptom
+        })
+        .then(response => {
+            console.log('Response:', response.data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
     };
 
     // Function to handle cancellation

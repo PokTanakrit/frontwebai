@@ -1,44 +1,95 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const fs = require('fs');
-const path = require('path');
 const cors = require('cors');
 
 const app = express();
 
-// ให้ Express.js ใช้ middleware bodyParser เพื่อแปลงข้อมูลที่ส่งมาเป็น JSON
+const data = {
+    PID: '', // รหัสผู้ป่วย
+    answer: {
+        ans1: null,
+        ans2: null,
+        ans3: null,
+        ans4: null,
+        ans5: null,
+        ans6: null,
+        ans7: null,
+        ans8: null
+    },
+    audio: {
+        audio1: null,
+        audio2: null,
+        audio3: null,
+        audio4: null,
+        audio5: null,
+        audio6: null,
+        audio7: null,
+        audio8: null
+    },
+    datetime: '' // เวลา
+};
+
+
+
 app.use(bodyParser.json());
-// ให้ Express.js ใช้ middleware cors เพื่อจัดการ CORS
-app.use(cors());
+app.use(cors())
 
 app.get('/hi', (req, res) => {
     res.send("Hello world");
 });
 
-// กำหนดเส้นทาง POST ที่ URL '/save-audio' เพื่อรับข้อมูลเสียงและบันทึกไฟล์
-app.post('/save-audio', (req, res) => {
-    const audioData = req.body.audio;
-
-    // สร้างชื่อไฟล์จาก timestamp
-    const filename = new Date().toISOString() + '.wav';
-
-    // ระบุเส้นทางไปยังไฟล์ที่จะบันทึก
-    const filePath = path.join(__dirname, 'src', 'audio', filename);
-
-    // เขียนข้อมูลเสียงลงในไฟล์
-    fs.writeFile(filePath, audioData, 'base64', (err) => {
-        if (err) {
-            console.error('เกิดข้อผิดพลาดในการเขียนไฟล์:', err);
-            res.status(500).send('เกิดข้อผิดพลาดในการบันทึกไฟล์');
-        } else {
-            console.log('บันทึกไฟล์เสียงสำเร็จ:', filename);
-            res.send('บันทึกไฟล์เสียงสำเร็จ');
-        }
-    });
+// Define a route to handle GET requests for retrieving all answers
+app.get('/data', (req, res) => {
+    // ส่งคำตอบทั้งหมดกลับไปยังผู้ใช้
+    res.json(data);
 });
 
-// เริ่มเซิร์ฟเวอร์ที่พอร์ต 5000
+app.get('/audio', (req, res) => {
+    res.json(data.audio);
+});
+
+
+
+// Define a route to handle POST requests for answering questions
+app.use(express.json());
+
+app.post('/answer', (req, res) => {
+    if (!req.body || Object.keys(req.body).length !== 1) {
+        return res.status(400).json({ error: "Invalid data format" });
+    }
+    
+    const key = Object.keys(req.body)[0];
+    if (!data.answer.hasOwnProperty(key)) {
+        return res.status(400).json({ error: "Invalid key" });
+    }
+
+    data.answer[key] = req.body[key];
+    
+    res.json({ message: "Answer received successfully" });
+});
+
+
+app.post('/PID', (req, res) => {
+    // ตรวจสอบว่าคำขอถูกส่งมาแล้วและมีข้อมูลที่ถูกต้องหรือไม่
+    if (!req.body || !req.body.PID) {
+        return res.status(400).json({ error: "Invalid data format or missing PID" });
+    }
+    
+    // ตรวจสอบค่า PID ว่ามีข้อมูลหรือไม่ และกำหนดค่าให้กับข้อมูล data
+    data.PID = req.body.PID;
+    
+    // ส่งข้อความยืนยันการรับ PID กลับไปยังผู้ใช้
+    res.json({ message: "PID received successfully" });
+});
+
+
+
+
+
+// Start the server on port 5000
 const PORT = 5000;
 app.listen(PORT, () => {
-    console.log(`เซิร์ฟเวอร์เริ่มทำงานที่ http://localhost:${PORT}`);
+    console.log(`Server is running at http://localhost:${PORT}`);
 });
+
+// node API.js

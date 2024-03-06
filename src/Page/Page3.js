@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import axios from 'axios'; // Import Axios
 import './Page.css';
 
 function Page3() {
+    const [mediaRecorder, setMediaRecorder] = useState(null);
     const [isRecording, setIsRecording] = useState(false);
     const [audioBlob, setAudioBlob] = useState(null);
 
@@ -24,26 +25,30 @@ function Page3() {
 
     const stopRecording = () => {
         setIsRecording(false);
+        if (mediaRecorder) {
+            mediaRecorder.stop();
+        }
     };
 
     const handleAudioStream = (stream) => {
-        const mediaRecorder = new MediaRecorder(stream);
-        let audioChunks = [];
+        const recorder = new MediaRecorder(stream);
+        setMediaRecorder(recorder);
 
-        mediaRecorder.addEventListener("dataavailable", (event) => {
+        const audioChunks = [];
+        recorder.addEventListener("dataavailable", (event) => {
             audioChunks.push(event.data);
         });
 
-        mediaRecorder.addEventListener("stop", () => {
+        recorder.addEventListener("stop", () => {
             const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
             setAudioBlob(audioBlob);
         });
 
-        mediaRecorder.start();
+        recorder.start();
 
         setTimeout(() => {
-            mediaRecorder.stop();
-        }, 10000); 
+            recorder.stop();
+        }, 10000);
     };
 
     const playAudio = () => {
@@ -54,10 +59,17 @@ function Page3() {
         }
     };
 
+    // Function to handle confirming the answer and sending data to the server
     const handleConfirm = () => {
-        axios.post('http://localhost:5000/audio', {
-            audio1: audioBlob
-        })
+        if (!audioBlob) {
+            console.error('No audio recorded.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('audio1', audioBlob, 'recorded_audio.wav');
+
+        axios.post('http://localhost:5000/audio', formData)
         .then(response => {
             console.log('Response:', response.data);
         })
@@ -84,6 +96,7 @@ function Page3() {
                 <button onClick={handleConfirm}>ยืนยัน</button>
                 <span className="button-gap"></span>
                 <Link to="/page4"><button>ถัดไป</button></Link>
+                <span className="button-gap"></span>
             </div>
         </div>
     );

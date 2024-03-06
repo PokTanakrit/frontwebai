@@ -1,8 +1,9 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
 
+const cors = require('cors');
 const app = express();
+
+
 
 const data = {
     PID: '', // รหัสผู้ป่วย
@@ -30,8 +31,6 @@ const data = {
 };
 
 
-
-app.use(bodyParser.json());
 app.use(cors())
 
 app.get('/hi', (req, res) => {
@@ -47,8 +46,6 @@ app.get('/data', (req, res) => {
 app.get('/audio', (req, res) => {
     res.json(data.audio);
 });
-
-
 
 // Define a route to handle POST requests for answering questions
 app.use(express.json());
@@ -68,7 +65,6 @@ app.post('/answer', (req, res) => {
     res.json({ message: "Answer received successfully" });
 });
 
-
 app.post('/PID', (req, res) => {
     // ตรวจสอบว่าคำขอถูกส่งมาแล้วและมีข้อมูลที่ถูกต้องหรือไม่
     if (!req.body || !req.body.PID) {
@@ -82,7 +78,26 @@ app.post('/PID', (req, res) => {
     res.json({ message: "PID received successfully" });
 });
 
+app.post('/audio', (req, res) => {
+    // ตรวจสอบว่ามีข้อมูลที่ถูกส่งมาหรือไม่
+    if (!req.body || Object.keys(req.body).length !== 1) {
+        return res.status(400).json({ error: "Invalid data format" });
+    }
+    
+    // ดึงคีย์ของข้อมูลออกมา
+    const key = Object.keys(req.body)[0];
+    
+    // ตรวจสอบว่าคีย์ที่ส่งมาถูกต้องหรือไม่
+    if (!data.answer.hasOwnProperty(key)) {
+        return res.status(400).json({ error: "Invalid key" });
+    }
 
+    // เก็บ Blob object ลงในตัวแปร audioBlob
+    data.audio[key] = req.body[key];
+
+    // ส่งข้อความยืนยันกลับไปยังผู้ใช้
+    res.json({ message: "Answer received successfully" });
+});
 
 
 
@@ -91,5 +106,3 @@ const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
 });
-
-// node API.js

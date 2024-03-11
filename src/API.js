@@ -3,10 +3,17 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
+const isBase64 = (str) => {
+    try {
+        return Buffer.from(str, 'base64').toString('base64') === str;
+    } catch (error) {
+        return false;
+    }
+};
 
 
 const data = {
-    PID: '', // รหัสผู้ป่วย
+    PID: '11111', // รหัสผู้ป่วย
     answer: {
         ans1: null,
         ans2: null,
@@ -44,7 +51,8 @@ app.get('/data', (req, res) => {
 });
 
 app.get('/audio', (req, res) => {
-    res.json(data.audio);
+    const key = Object.keys(req.body)[0];
+    res.json(data.audio[key]);
 });
 
 // Define a route to handle POST requests for answering questions
@@ -78,30 +86,31 @@ app.post('/PID', (req, res) => {
     res.json({ message: "PID received successfully" });
 });
 
-app.post('/audio', (req, res) => {
-    // ตรวจสอบว่ามีข้อมูลที่ถูกส่งมาหรือไม่
-    if (!req.body || Object.keys(req.body).length !== 1) {
-        return res.status(400).json({ error: "Invalid data format" });
-    }
-    
-    // ดึงคีย์ของข้อมูลออกมา
-    const key = Object.keys(req.body)[0];
-    
-    // ตรวจสอบว่าคีย์ที่ส่งมาถูกต้องหรือไม่
-    if (!data.answer.hasOwnProperty(key)) {
-        return res.status(400).json({ error: "Invalid key" });
-    }
 
-    // เก็บ Blob object ลงในตัวแปร audioBlob
-    data.audio[key] = req.body[key];
+app.post('/wave', (req, res) => {
+    try {
+        if (!req.body || Object.keys(req.body).length === 0) {
+            console.log('No data provided');
+            return res.status(400).json({ error: "No data provided" });
+        }
 
-    // ส่งข้อความยืนยันกลับไปยังผู้ใช้
-    res.json({ message: "Answer received successfully" });
+        const key = Object.keys(req.body)[0];
+
+        if (!isBase64(req.body[key])) {
+            console.log('Invalid data format');
+            return res.status(400).json({ error: "Invalid data format" });
+        }
+
+        // const audioBuffer = Buffer.from(req.body[key], 'base64');
+        data.audio[key] = req.body[key];
+
+        res.json({ message: "Audio data received successfully" });
+    } catch (error) {
+        console.error("Error processing audio data:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
 
-
-
-// Start the server on port 5000
 const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);

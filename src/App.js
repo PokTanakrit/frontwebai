@@ -13,6 +13,8 @@ import Page9 from './Page/Page9.js';
 import Page10 from './Page/Page10.js';
 import Page11 from './Page/Page11.js';
 import Page12 from './Page/Page12.js';
+import Page13 from './Page/Page13.js';
+import Page14 from './Page/Page14.js';
 import Pagekey from './Page/Keyboardpage.js';
 
 import Pagechoose3 from './Page/choosepage3.js'
@@ -51,6 +53,8 @@ function App() {
         <Route path='/choosepage9' element={<Pagechoose9/>} />
         <Route path='/choosepage10' element={<Pagechoose10/>} />
 
+        <Route path='/page13' element={<Page13/>} />
+        <Route path='/page14' element={<Page14/>} />
       </Routes>
     </Router>
   );

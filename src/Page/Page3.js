@@ -51,31 +51,38 @@ function Page3() {
         }, 10000);
     };
 
+    const handleConfirm = async () => {
+        if (!audioBlob) {
+            console.error('No audio recorded.');
+            return;
+        }
+    
+        try {
+            const reader = new FileReader();
+            reader.onload = async () => {
+                const base64String = reader.result.split(",")[1]; // Extract base64 string from data URL
+                console.log(base64String);
+                try {
+                    // Post the Base64 string to the server
+                    const response = await axios.post('http://localhost:5000/wave', { audio1: base64String });
+                    console.log('Response:', response.data);
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            };
+            reader.readAsDataURL(audioBlob);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+    
+
     const playAudio = () => {
         if (audioBlob) {
             const audioUrl = URL.createObjectURL(audioBlob);
             const audioElement = new Audio(audioUrl);
             audioElement.play();
         }
-    };
-
-    // Function to handle confirming the answer and sending data to the server
-    const handleConfirm = () => {
-        if (!audioBlob) {
-            console.error('No audio recorded.');
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('audio1', audioBlob, 'recorded_audio.wav');
-
-        axios.post('http://localhost:5000/audio', formData)
-        .then(response => {
-            console.log('Response:', response.data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
     };
 
     return (

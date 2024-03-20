@@ -6,9 +6,9 @@ function Page14() {
 
     const handleFetchAudio = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/data');
+            const response = await axios.get('http://127.0.0.1:5000/data');
             const audioData = response.data.audio.audio1;
-
+            console.log(audioData);
             // Create a Blob object from the base64 string
             const blob = base64ToBlob(audioData, 'audio/wav');
 

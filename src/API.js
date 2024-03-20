@@ -1,6 +1,7 @@
 const express = require('express');
-
+const bodyParser = require('body-parser');
 const cors = require('cors');
+const multer = require('multer');
 const app = express();
 
 const isBase64 = (str) => {
@@ -13,7 +14,7 @@ const isBase64 = (str) => {
 
 
 const data = {
-    PID: '11111', // รหัสผู้ป่วย
+    PID: '8888', // รหัสผู้ป่วย
     answer: {
         ans1: null,
         ans2: null,
@@ -39,6 +40,7 @@ const data = {
 
 
 app.use(cors())
+app.use(bodyParser.json({ limit: '50mb' }));
 
 app.get('/hi', (req, res) => {
     res.send("Hello world");
@@ -96,12 +98,7 @@ app.post('/wave', (req, res) => {
 
         const key = Object.keys(req.body)[0];
 
-        if (!isBase64(req.body[key])) {
-            console.log('Invalid data format');
-            return res.status(400).json({ error: "Invalid data format" });
-        }
-
-        // const audioBuffer = Buffer.from(req.body[key], 'base64');
+        // Store audio array in appropriate data structure
         data.audio[key] = req.body[key];
 
         res.json({ message: "Audio data received successfully" });
@@ -110,6 +107,7 @@ app.post('/wave', (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
 
 const PORT = 5000;
 app.listen(PORT, () => {

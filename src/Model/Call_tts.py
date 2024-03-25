@@ -26,8 +26,7 @@ def save_audio_file(audio_array, filename):
 
 urlget = 'http://127.0.0.1:5000/data'  # URL for uploading
 urlpost = 'http://127.0.0.1:5000/audioques'
-audio_folder = "./src/Model/Audio"  # Path to the folder where audio files will be saved
-
+audio_folder = rf'C:\Users\66968\Desktop\AI\APP\src\Model\Audio\ques'
 try:
     response = requests.get(urlget)
     if response.status_code == 200:

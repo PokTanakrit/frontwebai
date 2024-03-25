@@ -3,7 +3,8 @@ import requests
 import base64
 
 # ระบุตำแหน่งโฟลเดอร์ที่เก็บไฟล์ audio
-audio_folder = "src/Model/Audio"
+
+audio_folder = rf'C:\Users\66968\Desktop\AI\APP\src\Model\Audio\ques'
 
 # วนลูปผ่านไฟล์ทั้งหมดในโฟลเดอร์ audio
 for idx, filename in enumerate(os.listdir(audio_folder), start=1):

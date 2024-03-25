@@ -24,4 +24,3 @@ pipe = pipeline(
     torch_dtype=torch_dtype,
     device=device
 )
-

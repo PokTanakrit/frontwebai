@@ -1,107 +1,137 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios'; // Import Axios
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMicrophone, faStopCircle } from '@fortawesome/free-solid-svg-icons';
+import { AiFillSound } from "react-icons/ai";
 import './Page.css';
-
+import { downloadWav } from 'webm-to-wav-converter';
+import axios from 'axios';
 
 function Page3() {
-    const [mediaRecorder, setMediaRecorder] = useState(null);
     const [isRecording, setIsRecording] = useState(false);
-    const [audioBlob, setAudioBlob] = useState(null);
+    const [mediaRecorder, setMediaRecorder] = useState(null);
+    const mediaStream = useRef(null);
+    const audioChunks = useRef([]);
+    const [texttranscription, setTextTranscription] = useState('');
+    const [audioURL, setAudioURL] = useState(null);
 
-    const startRecording = () => {
+    const startRecording = async () => {
         setIsRecording(true);
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(handleAudioStream)
-            .catch((error) => {
-                console.error('Error accessing microphone:', error);
-                setIsRecording(false);
-            });
+        const constraints = { audio: true, video: false };
+
+        try {
+            if (mediaRecorder) {
+                mediaRecorder.stop();
+            }
+
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
+            mediaStream.current = stream;
+            const recorder = new MediaRecorder(stream);
+
+            recorder.ondataavailable = (e) => {
+                audioChunks.current.push(e.data);
+            };
+
+            recorder.onstop = () => {
+                const combinedBlob = new Blob(audioChunks.current, { type: 'audio/webm' });
+                downloadWav(combinedBlob, false);
+                audioChunks.current = []; // Clear audioChunks after downloading
+            };
+
+            setMediaRecorder(recorder);
+            recorder.start();
+        } catch (error) {
+            console.error('Error accessing microphone:', error);
+            setIsRecording(false);
+        }
     };
 
-    const stopRecording = () => {
+    const stopRecording = async () => {
         setIsRecording(false);
         if (mediaRecorder) {
             mediaRecorder.stop();
+            mediaStream.current.getTracks().forEach(track => track.stop());
         }
-    };
-
-    const handleAudioStream = (stream) => {
-        const recorder = new MediaRecorder(stream);
-        setMediaRecorder(recorder);
-
-        const audioChunks = [];
-        recorder.addEventListener("dataavailable", (event) => {
-            audioChunks.push(event.data);
-        });
-
-        recorder.addEventListener("stop", () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-            setAudioBlob(audioBlob);
-        });
-
-        recorder.start();
-
-        setTimeout(() => {
-            recorder.stop();
-        }, 10000);
-    };
-
-
-
-
-    const handleConfirm = async () => {
-        if (!audioBlob) {
-            console.error('No audio recorded.');
-            return;
-        }
-    
         try {
-            const reader = new FileReader();
-            reader.readAsArrayBuffer(audioBlob);
-            reader.onloadend = async () => {
-                // Convert ArrayBuffer to Uint8Array
-                const arrayBuffer = reader.result;
-                const uint8Array = new Uint8Array(arrayBuffer);
-                // Convert Uint8Array to base64 string
-                const base64String = btoa(String.fromCharCode.apply(null, uint8Array));
-                // Post the Base64 string to the server
-                const response = await axios.post('http://127.0.0.1:5000/audio', { audio: base64String, key: 'audio1' });
-                console.log('Response:', response.data);
-            };
+            const key = 'ans1';
+            const response = await axios.get(`http://127.0.0.1:5000/transcription?key=${key}`);
+            const data = response.data;
+            console.log(data);
+            setTextTranscription(data);
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error fetching audio:', error);
         }
     };
-    
 
+    const playAudio = () => {
+        if (audioURL) {
+            const audio = new Audio(audioURL);
+            audio.volume = 0.35; // กำหนดระดับเสียงเป็น 80%
+            audio.play();
+        }
+    };
 
+    const base64ToBlob = (base64, contentType) => {
+        const byteCharacters = atob(base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        return new Blob([byteArray], { type: contentType });
+    };
 
+    const handleFetchAudio = async () => {
+        try {
+            const response = await axios.get('http://127.0.0.1:5000/data');
+            const audioData = response.data.question[1].audio;
+            console.log(audioData);
+            // Create a Blob object from the base64 string
+            const blob = base64ToBlob(audioData, 'audio/wav');
+
+            // Create a URL for the Blob object
+            const audioURL = URL.createObjectURL(blob);
+
+            // Set the audio URL to state
+            setAudioURL(audioURL);
+            playAudio()
+        } catch (error) {
+            console.error('Error fetching audio:', error);
+        }
+    };
 
     return (
         <div>
-            <header>ไม่ทราบว่าเป็นอะไรมา มีอาการอะไรบ้างคะ?</header>
-
+            <div> 
+                <header>
+                    ไม่ทราบว่าเป็นอะไรมา มีอาการอะไรบ้างคะ?
+                    <span className="button-gap"></span>
+                    <span className="button-gap"></span>
+                    <button onClick={handleFetchAudio}><AiFillSound  /></button>
+                </header>
+            </div>
+            <div className="input-container">
+                <input
+                    type="text"
+                    value={texttranscription}
+                    onChange={(e) => setTextTranscription(e.target.value)}
+                />
+            </div>
             <div className="button-container">
                 <div>
                     <FontAwesomeIcon
                         icon={isRecording ? faStopCircle : faMicrophone}
                         style={{ cursor: 'pointer' }}
-                        size="6x" // เพิ่มขนาดไอคอนที่นี่
+                        size="6x"
                         onClick={isRecording ? stopRecording : startRecording}
                     />
                 </div>
                 <span className="button-gap"></span>
-                
-                {/* <button onClick={playAudio} disabled={!audioBlob}>เล่นเสียงที่บันทึกไว้</button> */}
                 <span className="button-gap"></span>
                 <Link to="/choosepage3">
                     <button>เลือกคำตอบ</button>
                 </Link>
                 <span className="button-gap"></span>
-                <button onClick={handleConfirm}>ยืนยัน</button>
                 <span className="button-gap"></span>
                 <Link to="/page4">
                     <button>ถัดไป</button>

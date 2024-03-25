@@ -1,93 +1,147 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMicrophone, faStopCircle } from '@fortawesome/free-solid-svg-icons';
+import { AiFillSound } from "react-icons/ai";
 import './Page.css';
+import { downloadWav } from 'webm-to-wav-converter';
+import axios from 'axios';
 
 function Page7() {
     const [isRecording, setIsRecording] = useState(false);
-    const [audioBlob, setAudioBlob] = useState(null);
-    const handleSpeak = async () => {
-        alert("Recording audio...");
-        startRecording();
-    };
-
-    const startRecording = () => {
+    const [mediaRecorder, setMediaRecorder] = useState(null);
+    const mediaStream = useRef(null);
+    const audioChunks = useRef([]);
+    const [texttranscription, setTextTranscription] = useState('');
+    const [audioURL, setAudioURL] = useState(null);
+    const startRecording = async () => {
         setIsRecording(true);
-        console.log("isRecording state:", isRecording);
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(handleAudioStream)
-            .catch((error) => {
-                console.error('Error accessing microphone:', error);
-                setIsRecording(false);
-            });
-    };
+        const constraints = { audio: true, video: false };
 
-    const stopRecording = () => {
-        setIsRecording(false);
-        console.log("isRecording state:", isRecording);
-    };
-    
+        try {
+            if (mediaRecorder) {
+                mediaRecorder.stop();
+            }
 
-    const handleAudioStream = (stream) => {
-        const mediaRecorder = new MediaRecorder(stream);
-        const audioChunks = [];
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
+            mediaStream.current = stream;
+            const recorder = new MediaRecorder(stream);
 
-        mediaRecorder.addEventListener("dataavailable", (event) => {
-            audioChunks.push(event.data);
-        });
+            recorder.ondataavailable = (e) => {
+                audioChunks.current.push(e.data);
+            };
 
-        mediaRecorder.addEventListener("stop", () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-            setAudioBlob(audioBlob);
-        });
+            recorder.onstop = () => {
+                const combinedBlob = new Blob(audioChunks.current, { type: 'audio/webm' });
+                downloadWav(combinedBlob, false);
+                audioChunks.current = []; // Clear audioChunks after downloading
+            };
 
-        mediaRecorder.start();
-
-        setTimeout(() => {
-            mediaRecorder.stop();
-        }, 10000); // Adjust recording time as needed
-    };
-
-    const playAudio = () => {
-        if (audioBlob) {
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const audioElement = new Audio(audioUrl);
-            audioElement.autoplay = true; // Autoplay audio
-            audioElement.controls = true; // Show audio controls
-            document.body.appendChild(audioElement); // Append audio element to DOM
+            setMediaRecorder(recorder);
+            recorder.start();
+        } catch (error) {
+            console.error('Error accessing microphone:', error);
+            setIsRecording(false);
         }
     };
-    
 
-    const handleDownload = () => {
-        if (audioBlob) {
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const audioElement = document.createElement('a');
-            audioElement.href = audioUrl;
-            audioElement.download = 'recorded_audio.wav';
-            audioElement.click();
+    const stopRecording = async () => {
+        setIsRecording(false);
+        if (mediaRecorder) {
+            mediaRecorder.stop();
+            mediaStream.current.getTracks().forEach(track => track.stop());
+        }
+        try {
+            const key = 'ans5';
+            const response = await axios.get(`http://127.0.0.1:5000/transcription?key=${key}`);
+            const data = response.data;
+            console.log(data);
+            setTextTranscription(data);
+        } catch (error) {
+            console.error('Error fetching audio:', error);
+        }
+    };
+
+    const playAudio = async () => {
+        if (!audioURL) {
+            await handleFetchAudio();
+        }
+        if (audioURL) {
+            const audio = new Audio(audioURL);
+            audio.volume = 0.35; // กำหนดระดับเสียงเป็น 80%
+            audio.play();
+        }
+    };
+
+    const base64ToBlob = (base64, contentType) => {
+        const byteCharacters = atob(base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        return new Blob([byteArray], { type: contentType });
+    };
+
+    const handleFetchAudio = async () => {
+        try {
+            const response = await axios.get('http://127.0.0.1:5000/data');
+            const audioData = response.data.question[5].audio;
+            console.log(audioData);
+            // Create a Blob object from the base64 string
+            const blob = base64ToBlob(audioData, 'audio/wav');
+
+            // Create a URL for the Blob object
+            const audioURL = URL.createObjectURL(blob);
+
+            // Set the audio URL to state
+            setAudioURL(audioURL);
+        } catch (error) {
+            console.error('Error fetching audio:', error);
         }
     };
 
     return (
         <div>
-            <header>มีกิจกรรมการออกกำลังกายอยู่ไหมคะ?</header>
+            <header>
+                     มีกิจกรรมการออกกำลังกายอยู่ไหมคะ?
+                    <span className="button-gap"></span>
+                    <span className="button-gap"></span>
+                    <button onClick={playAudio}><AiFillSound  /></button>
+            </header>
+            <div className="input-container">
+                <input
+                    type="text"
+                    value={texttranscription}
+                    onChange={(e) => setTextTranscription(e.target.value)}
+                />
+            </div>
             <div className="button-container">
-                {isRecording ? (
-                    <button onClick={stopRecording}>หยุดบันทึกเสียง</button>
-                ) : (
-                    <button onClick={handleSpeak}>พูด</button>
-                )}
+                <div>
+                    <FontAwesomeIcon
+                        icon={isRecording ? faStopCircle : faMicrophone}
+                        style={{ cursor: 'pointer' }}
+                        size="6x"
+                        onClick={isRecording ? stopRecording : startRecording}
+                    />
+                </div>
                 <span className="button-gap"></span>
-                <button onClick={playAudio} >เล่นเสียงที่บันทึกไว้</button>
                 <span className="button-gap"></span>
-                <button onClick={handleDownload} >ดาวน์โหลดเสียงที่บันทึกไว้</button>
+                <Link to="/choosepage7">
+                    <button>เลือกคำตอบ</button>
+                </Link>
                 <span className="button-gap"></span>
-                <Link to="/choosepage7"><button>เลือกคำตอบ</button></Link>
                 <span className="button-gap"></span>
-                <Link to="/page8"><button>ถัดไป</button></Link>
+                <Link to="/page8">
+                    <button>ถัดไป</button>
+                </Link>
+                <span className="button-gap"></span>
             </div>
         </div>
     );
 }
 
 export default Page7;
+
+
+

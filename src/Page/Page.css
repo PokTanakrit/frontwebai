@@ -65,6 +65,7 @@ header {
 
 .input-container {
   margin-bottom: 10px;
+  padding-top: 80px; /* หรือเลือกใช้ padding-top */
 }
 
 p1 {

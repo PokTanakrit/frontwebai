@@ -2,12 +2,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import numpy as np
-from Model_speech_to_text import pipe
+from Model_speech_to_text import transcribe_audio_from_server
 import librosa
 import os
 
 app = Flask(__name__)
 CORS(app)
+CORS(app, resources={r"/transcription": {"origins": "http://localhost:3000"}}, headers="Content-Type")
 
 # Initial data
 data = {
@@ -100,7 +101,7 @@ def receive_answer():
 
 @app.route('/PID', methods=['POST'])
 def receive_pid():
-    req_data = request.get_json()
+    req_data = request.json.get('PID')
     if req_data and "PID" in req_data:
         data["PID"] = req_data["PID"]
         return jsonify({ "message": "PID received successfully" })
@@ -108,32 +109,21 @@ def receive_pid():
         return jsonify({ "error": "Invalid data format or missing PID" })
 
 
-@app.route('/transcription', methods=['GET'])
-def get_transcripttion():
-    key = request.args.get('key')
-    if key in data["answer"]:
-        directory = r'C:\Users\66968\Desktop\AI\APP\src\Model\Audio'
-        # หาไฟล์ทั้งหมดในไดเรกทอรี
-        files = os.listdir(directory)
-        # เรียงลำดับไฟล์ตามเวลาแก้ไขล่าสุด
-        files.sort(key=lambda x: os.path.getmtime(os.path.join(directory, x)), reverse=True)
-        # เลือกไฟล์ที่เพิ่มมาล่าสุด
-        latest_file = files[0]
-        print("ไฟล์ที่เพิ่มมาล่าสุด:", latest_file)
-        # Load your own audio file
-        path = rf'C:\Users\66968\Desktop\AI\APP\src\Model\Audio\{latest_file}'
-        # Load the audio and its sampling rate
-        audio_array, sampling_rate = librosa.load(path, sr=16000, mono=True)
-        # Transcribe the audio
-        result = pipe({"raw": audio_array, "sampling_rate": sampling_rate})
-        # Print the transcribed text
-        Transcribed_text = result["text"]
-        data["answer"][key] = Transcribed_text
-        return jsonify(Transcribed_text)
-    else:
-        return jsonify({ "error": "Invalid key" })
-
-
+@app.route('/transcription', methods=['POST'])
+def transcribe_audio():
+    try:
+        # รับข้อมูลเสียงที่ส่งมาในรูปแบบของ JSON
+        audio_data = request.json.get('audioData')
+        audio_array = np.array(list(audio_data.values()))
+        
+        # แปลงเสียงเป็นข้อความ
+        transcriptions = transcribe_audio_from_server(audio_array)
+        
+        # ส่งข้อความที่แปลงได้กลับไปยังไคลเอนต์
+        return jsonify({'transcribedText': transcriptions})
+    except Exception as e:
+        # ส่งข้อผิดพลาดในกรณีที่เกิดข้อผิดพลาดในการรับหรือแปลงข้อมูลเสียง
+        return jsonify({ "error": str(e) }), 500
 
 
 

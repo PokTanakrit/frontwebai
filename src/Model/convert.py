@@ -24,23 +24,28 @@
 # # Convert WebM to WAV
 # ffmpeg.input(input_file).output(output_file, acodec='pcm_s16le').run(ffmpeg_path=ffmpeg_exe)
 
-import os
+# import os
 
-directory = r'C:\Users\66968\Desktop\AI\APP\src\Model\Audio'
+# directory = r'C:\Users\66968\Desktop\AI\APP\src\Model\Audio'
 
-# หาไฟล์ทั้งหมดในไดเรกทอรี
-files = os.listdir(directory)
+# # หาไฟล์ทั้งหมดในไดเรกทอรี
+# files = os.listdir(directory)
 
-# เรียงลำดับไฟล์ตามเวลาแก้ไขล่าสุด
-files.sort(key=lambda x: os.path.getmtime(os.path.join(directory, x)), reverse=True)
+# # เรียงลำดับไฟล์ตามเวลาแก้ไขล่าสุด
+# files.sort(key=lambda x: os.path.getmtime(os.path.join(directory, x)), reverse=True)
 
-# เลือกไฟล์ที่เพิ่มมาล่าสุด
-latest_file = files[0]
+# # เลือกไฟล์ที่เพิ่มมาล่าสุด
+# latest_file = files[0]
 
-print("ไฟล์ที่เพิ่มมาล่าสุด:", latest_file)
+# print("ไฟล์ที่เพิ่มมาล่าสุด:", latest_file)
+import numpy as np
+import requests
 
-
-
-
-
-
+urlget = 'http://127.0.0.1:5000/data'  # URL for uploading
+response = requests.get(urlget)
+data = response.json()  # Convert response to JSON format
+print(data['audio']['audio1'])
+print(type(data['audio']['audio1']))
+audio_data = data['audio']['audio1']
+audio_array = np.array(list(audio_data.values()))
+print(type(audio_array))  # ตรวจสอบชนิดข้อมูลหลังจากการแปลง

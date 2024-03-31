@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios'; // Import Axios
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMicrophone, faStopCircle } from '@fortawesome/free-solid-svg-icons';
 import './Page.css';
 
 function Page11() {
@@ -12,18 +14,16 @@ function Page11() {
     const [otherSymptoms, setOtherSymptoms] = useState('');
     const [impactOnDailyLife, setImpactOnDailyLife] = useState('');
     const [pastMedicalHistory, setPastMedicalHistory] = useState('');
+    const [userId, setUserId] = useState(''); // Add userId state
 
     useEffect(() => {
-        // Fetch data when the component mounts
         fetchData();
     }, []);
 
     const fetchData = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/data');
-            // Destructure data from response
+            const response = await axios.get('http://127.0.0.1:5000/data');
             const { ans1, ans2, ans3, ans4, ans5, ans6, ans7, ans8 } = response.data.answer;
-            // Update state with fetched data
             setSymptoms(ans1);
             setHistory(ans2);
             setMedication(ans3);
@@ -32,65 +32,55 @@ function Page11() {
             setOtherSymptoms(ans6);
             setImpactOnDailyLife(ans7);
             setPastMedicalHistory(ans8);
+            setUserId(response.data.userId); // Set userId state
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
 
+    const handleConfirm = () => {
+    };
+    const handleback = () => {
+    };
+    const handleCancel = () => {
+    }
+
     return (
         <div>
-            <header>สรุป</header>
-            <div>
-                <p1>อาการ</p1>
-                <input className="small-input" type="text" value={symptoms} onChange={(e) => setSymptoms(e.target.value)} />
-                <span className="button-gap"></span>
-                <Link to="/page3"><button>แก้ไข</button></Link>
-            </div>
-            <div>
-                <p2>เป็นมา</p2>
-                <input className="small-input" type="text" value={history} onChange={(e) => setHistory(e.target.value)} />
-                <span className="button-gap"></span>
-                <Link to="/page4"><button>แก้ไข</button></Link>
-            </div>
-            <div>
-                <p3>ทานยา</p3>
-                <input className="small-input" type="text" value={medication} onChange={(e) => setMedication(e.target.value)} />
-                <span className="button-gap"></span>
-                <Link to="/page5"><button>แก้ไข</button></Link>
-            </div>
-            <div>
-                <p4>แพ้ยา</p4>
-                <input className="small-input" type="text" value={drugAllergies} onChange={(e) => setDrugAllergies(e.target.value)} />
-                <span className="button-gap"></span>
-                <Link to="/page6"><button>แก้ไข</button></Link>
-            </div>
-            <div>
-                <p5>ออกกำลังกาย</p5>
-                <input className="small-input" type="text" value={exercise} onChange={(e) => setExercise(e.target.value)} />
-                <span className="button-gap"></span>
-                <Link to="/page7"><button>แก้ไข</button></Link>
-            </div>
-            <div>
-                <p6>อาการอื่นๆ</p6>
-                <input className="small-input" type="text" value={otherSymptoms} onChange={(e) => setOtherSymptoms(e.target.value)} />
-                <span className="button-gap"></span>
-                <Link to="/page8"><button>แก้ไข</button></Link>
-            </div>
-            <div>
-                <p7>ส่งผลต่อชีวิตประจำวัน</p7>
-                <input className="small-input" type="text" value={impactOnDailyLife} onChange={(e) => setImpactOnDailyLife(e.target.value)} />
-                <span className="button-gap"></span>
-                <Link to="/page9"><button>แก้ไข</button></Link>
-            </div>
-            <div>
-                <p8>เคยเป็นมาก่อน</p8>
-                <input className="small-input" type="text" value={pastMedicalHistory} onChange={(e) => setPastMedicalHistory(e.target.value)} />
-                <span className="button-gap"></span>
-                <Link to="/page10"><button>แก้ไข</button></Link>
-            </div>
-            <div className="button-container">
-                <Link to="/page12"><button>ถัดไป</button></Link>
-            </div>
+            <header className="flex-container">
+                <div className="circle grey"><span>1</span></div> 
+                <div className="circle grey"><span>2</span></div> 
+                <div className="circle blue"><span>3</span></div> 
+            </header>
+            <body>
+                <div className='panelmain'>
+                    <div className="panelcontainer"> 
+                        <div style={{ color: '#062D62' }}>หมายเลขบัตรประจำตัวโรงพยาบาล</div>
+                        <div className="paneldisplay">
+                            <div style={{ position: 'relative', left: '15px' }}>PID: {userId}</div>
+                            <div style={{ position: 'relative', left: '15px' }}>ความดันสูงสุด:</div>
+                            <div style={{ position: 'relative', left: '15px' }}>ความดันต่ำสุด:</div>
+                            <div style={{ position: 'relative', left: '15px' }}>อัตราการเต้นของหัวใจ:</div>
+                            <div style={{ position: 'relative', left: '15px' }}>อาการ: {symptoms}</div>
+                            <div style={{ position: 'relative', left: '15px' }}>เป็นมา: {history}</div>
+                            <div style={{ position: 'relative', left: '15px' }}>ทานยา: {medication}</div>
+                            <div style={{ position: 'relative', left: '15px' }}>แพ้ยา: {drugAllergies}</div>
+                            <div style={{ position: 'relative', left: '15px' }}>ออกกำลังกาย: {exercise}</div>
+                            <div style={{ position: 'relative', left: '15px' }}>อาการอื่นๆ: {otherSymptoms}</div>
+                            <div style={{ position: 'relative', left: '15px' }}>ส่งผลต่อชีวิตประจำวัน: {impactOnDailyLife}</div>
+                        </div>
+                        <div style={{ margin: '20px' }}>
+                            <Link to="/page10"><button onClick={handleback} >ย้อนหลับ</button></Link>
+                            <span className="button-gap"></span>
+                            <span className="button-gap"></span>
+                            <button onClick={handleCancel} style={{ background: '#ff5b5b'  }}>ยกเลิก</button>
+                            <span className="button-gap"></span>
+                            <span className="button-gap"></span>
+                            <Link to="/page12"><button onClick={handleConfirm} style={{ background: '#C1FF72'  }}>ยืนยัน</button></Link>
+                        </div>
+                    </div>
+                </div>
+            </body>
         </div>
     );
 }

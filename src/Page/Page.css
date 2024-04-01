@@ -1,0 +1,158 @@
+.input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px; /* กำหนดความสูงของ input container */
+}
+
+input {
+  width: 80%;
+  height: 80%;
+  padding: 50px;
+  font-size: 50px;
+  border: none;
+  box-sizing: border-box;
+}
+
+.small-input {
+  width: 50%;
+  padding: 20px;
+  font-size: 50px;
+  border: none;
+  box-sizing: border-box;
+  margin-left: 80px; /* Add margin to the left */
+}
+
+
+header {
+  text-align: center;
+}
+
+.symptom-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.symptom-list li {
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+.button-container {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.button-container button {
+  margin: 5px; /* ปรับระยะห่างระหว่างปุ่ม */
+}
+
+.button-gap {
+  margin-right: 10px;
+}
+
+.selected {
+  background-color: lightblue; /* เปลี่ยนสีเมื่อถูกเลือก */
+}
+
+.center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.center-text {
+    text-align: center;
+}
+
+.input-container {
+  margin-bottom: 10px;
+  padding-top: 80px; /* หรือเลือกใช้ padding-top */
+}
+
+
+.flex-container {
+  display: flex;
+  justify-content: center;
+}
+
+.circle {
+  width: 100px; /* ปรับขนาดของวงกลมตามต้องการ */
+  height: 100px; /* ปรับขนาดของวงกลมตามต้องการ */
+  margin: 10px; /* ปรับระยะห่างระหว่างวงกลม */
+  border-radius: 50%; /* ทำให้มุมของสี่เหลี่ยมเป็นวงกลม */
+  display: flex; /* ให้วงกลมแสดงเป็น Flex container */
+  justify-content: center; /* จัดตำแหน่งตามแนวนอนเป็นกึ่งกลาง */
+  align-items: center; /* จัดตำแหน่งตามแนวตั้งเป็นกึ่งกลาง */
+}
+
+.circle span {
+  font-size: 65px; /* ปรับขนาดตัวเลขภายในวงกลมตามต้องการ */
+  color: black;
+}
+
+.blue {
+  background-color: #47DCFC; /* สีพื้นหลังของวงกลมสีฟ้า */
+}
+
+.white {
+  background-color: white; /* สีพื้นหลังของวงกลมสีขาว */
+}
+.grey{
+  background-color: #aaa9a9;
+}
+
+.paneldisplay {
+  width: 90%; /* กำหนดความกว้างเท่า 90% ของ panelmain */
+  height: auto;
+  border: 1px solid #ccc; /* เส้นขอบสีเทาบาง */
+  margin: 50px; /* ระยะห่างระหว่าง panel */
+  background-color: whitesmoke;
+  border-radius: 10px; /* ขอบมน */
+  color: #3d3d3d;
+}
+
+.panelcontainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.panelfunction {
+  width: 80%;
+  height: 400px;
+  border: 1px solid #ccc; /* เส้นขอบสีเทาบาง */
+  margin: 50px; /* ระยะห่างระหว่าง panel */
+  border-radius: 10px; /* ขอบมน */
+  color: #3d3d3d;
+  font-size: medium;
+}
+
+.panelmain {
+  width: 80%;
+  height: 1000px;
+  border: 1px solid #ccc; /* เส้นขอบสีเทาบาง */
+  margin: 0 auto; /* จัดการให้ panel อยู่กลางแนวนอน */
+  border-radius: 10px; /* ขอบมน */
+  background-color: #ccc;
+  display: flex; /* ให้เป็น flex container */
+  justify-content: center; /* จัดการให้ panel อยู่กลางแนวตั้ง */
+  align-items: center; /* จัดการให้ panel อยู่กลางแนวนอน */
+}
+
+.mic-window {
+  display: none;
+  position: fixed;
+  width: 300px;
+  height: 200px;
+  background-color: white;
+  border: 1px solid #ccc;
+  z-index: 9999; /* ให้หน้าต่างอยู่ข้างบน */
+  /* ตั้งค่าอื่น ๆ ตามต้องการ */
+}
+
+
+

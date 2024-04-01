@@ -32,6 +32,20 @@ function Page1() {
         });
     };
 
+    const getHL7 = (PID) => {
+        axios.get(`http://127.0.0.1:5000/HL7?PID=${PID}`)
+        .then(response => {
+            const { SYS, DIA, PUL } = response.data;
+            setSYS(SYS);
+            setDIA(DIA);
+            setPUL(PUL);
+            console.log('Received HL7 data:', response.data);
+        })
+        .catch(error => {
+            console.error('Error getting HL7 data:', error);
+        });
+    };
+
     const handleCancel = () => {
         setUserId('');
         setSYS('');
@@ -110,6 +124,7 @@ function Page1() {
             
             // อัพเดท state userId ด้วยข้อความที่ได้จากการแปลง
             setUserId(userIdString);
+            await getHL7(userIdString);
             console.log('Successfully sent audio data to server:', userIdString);
         } catch (error) {
             console.error('Error converting audioBlob to audioBuffer:', error);
@@ -163,9 +178,9 @@ function Page1() {
                         <div style={{ color: '#062D62' }}>หมายเลขบัตรประจำตัวโรงพยาบาล</div>
                         <div className="paneldisplay">
                             <div style={{ position: 'relative', left: '15px' }}>PID: {userId}</div>
-                            <div style={{ position: 'relative', left: '15px' }}>ความดันสูงสุด:</div>
-                            <div style={{ position: 'relative', left: '15px' }}>ความดันต่ำสุด:</div>
-                            <div style={{ position: 'relative', left: '15px' }}>อัตราการเต้นของหัวใจ:</div>
+                            <div style={{ position: 'relative', left: '15px' }}>ความดันสูงสุด:{SYS}</div>
+                            <div style={{ position: 'relative', left: '15px' }}>ความดันต่ำสุด:{DIA}</div>
+                            <div style={{ position: 'relative', left: '15px' }}>อัตราการเต้นของหัวใจ:{PUL}</div>
                         </div>
                         <div className="center-container">
                             <div className="button-container">

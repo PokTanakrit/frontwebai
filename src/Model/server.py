@@ -70,13 +70,42 @@ data = {
     "datetime": ""
 }
 
+HL7 = [
+    {
+        "userId": "123456",
+        "SYS": "120",
+        "DIA": "80",
+        "PUL": "70"
+    },
+    {
+        "userId": "789012",
+        "SYS": "130",
+        "DIA": "85",
+        "PUL": "75"
+    },
+    {
+        "userId": "345678",
+        "SYS": "140",
+        "DIA": "90",
+        "PUL": "80"
+    }
+]
+
 @app.route('/')
 def hello():
     return "Hello world"
 
-@app.route('/data')
+@app.route('/data',methods=['GET'])
 def get_data():
     return jsonify(data)
+
+@app.route('/HL7',methods=['GET'])
+def get_hl7_data():
+    PID = request.args.get('PID')
+    for item in HL7:
+        if item['userId'] == PID:
+            return jsonify(item)
+    return jsonify({ "error": "Invalid PID" })
 
 @app.route('/audio', methods=['GET'])
 def get_audio():
